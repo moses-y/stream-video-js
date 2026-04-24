@@ -60,6 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
 
       - uses: ./.github/actions/rn-bootstrap
         timeout-minutes: 15
@@ -72,7 +73,7 @@ jobs:
         run: bundle exec fastlane rubocop
 
       - name: Test RN SDK (Unit tests only)
-        run: yarn test:react-native:sdk
+        run: pnpm test:react-native:sdk
 
   build_ios:
     name: Build iOS

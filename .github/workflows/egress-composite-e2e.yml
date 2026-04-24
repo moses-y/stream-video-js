@@ -22,6 +22,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
           fetch-depth: 1
 
@@ -29,11 +30,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: 'yarn'
-          cache-dependency-path: 'yarn.lock'
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
 
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
 
       - name: Resolve Playwright version
         id: playwright-version
@@ -55,10 +56,10 @@ jobs:
 
       - name: Install Playwright browsers if not cached
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium
+        run: pnpm dlx playwright install chromium
 
       - name: Install Playwright system dependencies (always)
-        run: npx playwright install-deps
+        run: pnpm dlx playwright install-deps
 
       - name: Run Playwright tests
         run: yarn workspace @stream-io/egress-composite test:e2e:prod
