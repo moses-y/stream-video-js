@@ -1,4 +1,5 @@
 FROM node:22-alpine AS packager
+RUN corepack enable
 WORKDIR /e2e
 
 COPY sample-apps/ sample-apps/
@@ -8,17 +9,18 @@ COPY packages/ packages/
 RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
 
 FROM node:22-bullseye AS runner
+RUN corepack enable
 WORKDIR /e2e
 
 COPY .yarn/ ./.yarn/
-COPY yarn.lock package.json .yarnrc.yml ./
+COPY pnpm-lock.yaml package.json .yarnrc.yml ./
 COPY --from=packager /e2e/packages ./packages
 COPY --from=packager /e2e/sample-apps ./sample-apps
 
-RUN yarn install
+RUN pnpm install
 
-RUN npx playwright install chromium
-RUN npx playwright install-deps
+RUN pnpm dlx playwright install chromium
+RUN pnpm dlx playwright install-deps
 
 # Copy all sources next
 COPY ./packages ./packages

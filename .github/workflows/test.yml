@@ -19,12 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: 'yarn'
+          cache: 'pnpm'
 
       - name: ESLint Cache
         uses: actions/cache@v4
@@ -33,16 +34,16 @@ jobs:
           key: ${{ runner.os }}-eslintcache-${{ github.ref_name }}-${{ hashFiles('.eslintcache') }}
 
       - name: Install Dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
 
       - name: Lint Packages
         run: yarn lint:ci:all
 
       - name: Test packages
-        run: yarn test:ci:all
+        run: pnpm test:ci:all
 
       - name: Build packages
         run: NODE_ENV=production yarn build:all
 
       - name: Test RN SDK
-        run: yarn test:react-native:sdk
+        run: pnpm test:react-native:sdk

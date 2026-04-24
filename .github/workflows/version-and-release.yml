@@ -29,6 +29,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
           fetch-depth: 0
 
@@ -36,7 +37,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: 'yarn'
+          cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
       - name: ESLint Cache
@@ -46,7 +47,7 @@ jobs:
           key: ${{ runner.os }}-eslintcache-${{ github.ref_name }}-${{ hashFiles('.eslintcache') }}
 
       - name: Install Dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
 
       - name: Lint Packages
         run: yarn lint:ci:packages
@@ -55,7 +56,7 @@ jobs:
         run: NODE_ENV=production yarn build:libs
 
       - name: Test packages
-        run: yarn test:ci:libs
+        run: pnpm test:ci:libs
 
       - name: Version and release packages
         env:
